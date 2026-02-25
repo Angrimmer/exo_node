@@ -1,0 +1,38 @@
+const bcrypt = require("bcrypt");
+const user = require("../models/user.model");
+
+const createUser = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    const existing = await user.findByEmail(email);
+
+    if (existing) {
+      return res.status(400).json({
+        error: "conflict",
+        message: "Email déja utilisé",
+      });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    const id = await user.createUser(email, hashedPassword);
+
+    res.status(201).json({
+      message: "utilisateur crée",
+      id,
+      email,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        error: " conflict",
+        message: "Email déja utilisé",
+      });
+    }
+    next(error);
+  }
+};
+
+module.exports = { createUser };
