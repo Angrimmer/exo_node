@@ -1,49 +1,52 @@
-const router = require("express").Router()                                      // Permet d'étre monté dans mon server.js (app.js pour vous) en gros c'est require('express') mais en mode modulaire
-const jwt = require("jsonwebtoken")                                             // Le package qui gere les token (duuuuh)
+const pool = require("../config/db");
+const router = require("express").Router();
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-router.post('/login', async (req, res, next) => {                               // Ecoute les requettes http POST sur http://localhost:3000/user/login
-    const { email, password } = req.body;                                       // Get le contenu envoyé par le client, les definit au varaibles
+router.post("/login", async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-    if (!email || !password) {                                                  // Check si elles existe ou pas
-        return res.status(400).json({
-            error: "badRequest",
-            message: "Champs manquant"
-        })
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "badRequest", message: "Champs manquants" });
     }
 
-    // Une requette SQL qui contiens uniquement ce qui correspond a l'email envoyé par le client
     const [rows] = await pool.query(
-        "SELECT id,email,password FROM users WHERE email = ? LIMIT 1", [email]
-    )
+      "SELECT id,email,password from users WHERE email = ? LIMIT 1 ",
+      [email],
+    );
 
-    if (rows.length === 0){                                                     // Si la reponse de la requette d'avant est null, ça degage
-        return res.status(401).json({
-            error: "Unauthorized",
-            message: "indentifiant invalides"
-        })
+    if (rows.length === 0) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "identifiants invalides",
+      });
     }
-    const user = rows[0]                                                        // Choppe le premier output de la reponse du SQL, et le definit en tant que user
 
-    const isMatch = await bcrypt.compare(password, user.password)               // Check le mdp recu par POST, le compare avec le mdp hashé recu par SQL
+    const user = rows[0];
 
-    if(!isMatch){                                                               // Dit "degage" si le mdp recu coincide pas
-        return res.status(401).json({
-            error: "Unauthorized",
-            message: "Identifiants invalides"
-        })
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "Identifiants invalides",
+      });
     }
-    // Set un token, lié a l'user.id 
-    const token = jwt.sign(
-        {userId: user.id},
-        process.env.JWT_SECRET,
-        {expiresIn: process.env.JWT_EXIRES_IN || '1h'}
-    )
 
-    // Sert le token a l'utilisateur
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+    });
+
     res.json({
-        message: 'login ok',
-        token
-    })
-})
+      message: "login ok",
+      token,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
-module.exports = router
+module.exports = router;

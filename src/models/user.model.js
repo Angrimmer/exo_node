@@ -16,12 +16,18 @@ const createUser = async (email, hashedPassword) => {
   return result.insertId;
 };
 
-  const findAllPublic = async () => {
-    const [rows] = await pool.query(
-      "SELECT id, email FROM users ORDER BY id DESC"
+const findAllPublic = async () => {
+  const [rows] = await pool.query(
+    "SELECT id, email FROM users ORDER BY id DESC"
   );
   return rows;
 };
+
+const getTheConnectedIdiot = async () => {
+  const [rows] = await pool.query(
+    "SELECT id, email FROM users"
+  )
+}
 
 
 module.exports = { findByEmail, createUser, findAllPublic };
