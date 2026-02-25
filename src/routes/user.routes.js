@@ -6,7 +6,7 @@ const userController = require('../controllers/user.controller')
 
 
 router.post('/', validateUser, userController.createUser)
-
+router.get('/', userController.listUsers)
 
 
 router.get("/", async (req, res, next) => {

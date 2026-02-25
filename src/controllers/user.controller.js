@@ -35,4 +35,13 @@ const createUser = async (req, res, next) => {
   }
 };
 
-module.exports = { createUser };
+const listUsers = async (req, res, next) => {
+    try {
+        const users = await user.findAllPublic();
+        res.json(users)
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports = { createUser, listUsers };

@@ -13,8 +13,15 @@ const createUser = async (email, hashedPassword) => {
     "INSERT INTO users (email, password) VALUES (?,?)",
     [email, hashedPassword],
   );
-
   return result.insertId;
 };
 
-module.exports = { findByEmail, createUser };
+  const findAllPublic = async () => {
+    const [rows] = await pool.query(
+      "SELECT id, email FROM users ORDER BY id DESC"
+  );
+  return rows;
+};
+
+
+module.exports = { findByEmail, createUser, findAllPublic };
