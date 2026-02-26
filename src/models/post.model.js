@@ -15,4 +15,29 @@ const findAllPosts = async () => {
   return rows;
 };
 
-module.exports = { createPost, findAllPosts };
+//? vérifier que le post est bien celui de l'user qui l'à écrit
+const findPostById = async (id) => {
+  const [rows] = await pool.query(
+    "SELECT * FROM post WHERE id = ? LIMIT 1",
+    [id]
+  );
+  return rows[0];
+};
+
+const updatePost = async (id, title, content) => {
+  const [result] = await pool.query(
+    "UPDATE post SET title = ?, content = ? WHERE id = ?",
+    [title, content, id]
+  );
+  return result.affectedRows;
+};
+
+const deletePost = async (id) => {
+  const [result] = await pool.query(
+    "DELETE FROM post WHERE id = ?",
+    [id]
+  );
+  return result.affectedRows;
+};
+
+module.exports = { createPost, findAllPosts, findPostById, updatePost, deletePost };

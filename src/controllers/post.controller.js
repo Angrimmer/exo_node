@@ -34,6 +34,52 @@ const getAllPosts = async (req, res, next) => {
   }
 };
 
-module.exports = { createPost, getAllPosts };
+const updatePost = async (req, res, next) => {
+  try {
+    const { title, content } = req.body;
+    const postId = req.params.id;
+
+    // Récupérer le post pour vérifier le propriétaire
+    const post = await postModel.findPostById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "not found", message: "Post introuvable" });
+    }
+
+    if (post.userId !== req.userId) {
+      return res.status(403).json({ error: "forbidden", message: "Tu n'es pas l'auteur de ce post" });
+    }
+
+    await postModel.updatePost(postId, title, content);
+
+    res.status(200).json({ message: "Post modifié", id: postId, title, content });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deletePost = async (req, res, next) => {
+  try {
+    const postId = req.params.id;
+
+    const post = await postModel.findPostById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "not found", message: "Post introuvable" });
+    }
+
+    if (post.userId !== req.userId) {
+      return res.status(403).json({ error: "forbidden", message: "Tu n'es pas l'auteur de ce post" });
+    }
+
+    await postModel.deletePost(postId);
+
+    res.status(200).json({ message: "Post supprimé" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createPost, getAllPosts, updatePost, deletePost };
 
 //! je pourrais ajouter de la sécurité, mais c'était surtout pour avoir l'idée
