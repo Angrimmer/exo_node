@@ -1,8 +1,9 @@
 const express = require('express');
 const userRoutes = require("./routes/user.routes");
 const app = express();
-const pool = require("./config/db")  
-const userAuth = require("./routes/auth.route")
+const pool = require("./config/db");  
+const userAuth = require("./routes/auth.route");
+const postRoutes = require("./routes/post.route");
 
 require("dotenv").config()
 
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/users', userRoutes)
 app.use('/auth', userAuth)
+app.use("/posts", postRoutes);
 
 app.use((req, res) => {
 	res.status(404).json({
@@ -42,3 +44,4 @@ app.use((err, req, res, next) => {
 app.listen(3000, () => {
     console.log("server running on port 3000");
 })
+
