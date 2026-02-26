@@ -4,7 +4,7 @@ const auth = (req,res,next) => {
     try {
         const header = req.headers.authorization;
 
-        if (!header || !header.startWith("bearer")) {
+        if (!header || !header.startsWith("Bearer ")) {
             return res.status(401).json({
                 error: 'unauthorized',
                 message: 'Token manquant',
@@ -22,3 +22,5 @@ const auth = (req,res,next) => {
         });
     }
 }
+
+module.exports = auth;

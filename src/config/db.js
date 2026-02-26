@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 
+
 const pool = mysql.createPool({
 	host: 'localhost',
 	user: 'root',
@@ -8,3 +9,4 @@ const pool = mysql.createPool({
 });
 
 module.exports = pool;
+process.env.DB_HOST;

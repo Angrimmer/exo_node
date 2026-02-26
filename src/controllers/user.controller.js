@@ -44,4 +44,17 @@ const listUsers = async (req, res, next) => {
     }
 }
 
-module.exports = { createUser, listUsers };
+const getMe = async (req, res, next) => {
+  try {
+    const me = await user.getTheConnectedIdiot(req.userId);
+    
+    if (!me) {
+      return res.status(404).json({ error: "not found", message: "Utilisateur introuvable"});
+    }
+    res.status(200).json(me);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createUser, listUsers, getMe };

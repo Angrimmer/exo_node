@@ -23,11 +23,13 @@ const findAllPublic = async () => {
   return rows;
 };
 
-const getTheConnectedIdiot = async () => {
+const getTheConnectedIdiot = async (id) => {
   const [rows] = await pool.query(
-    "SELECT id, email FROM users"
-  )
-}
+    "SELECT id, email FROM users WHERE id = ? LIMIT 1",
+    [id]
+  );
+  return rows[0];
+};
 
 
-module.exports = { findByEmail, createUser, findAllPublic };
+module.exports = { findByEmail, createUser, findAllPublic, getTheConnectedIdiot };

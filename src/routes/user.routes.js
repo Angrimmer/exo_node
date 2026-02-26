@@ -18,5 +18,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+const auth = require("../middlewares/auth"); 
+router.get("/me", auth, userController.getMe);
 
 module.exports = router;
