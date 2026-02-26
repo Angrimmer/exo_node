@@ -25,4 +25,15 @@ const createPost = async (req, res, next) => {
   }
 };
 
-module.exports = { createPost };
+const getAllPosts = async (req, res, next) => {
+  try {
+    const posts = await postModel.findAllPosts();
+    res.status(200).json(posts);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createPost, getAllPosts };
+
+//! je pourrais ajouter de la sécurité, mais c'était surtout pour avoir l'idée
